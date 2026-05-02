@@ -1,13 +1,13 @@
 variable "instance_name" {
   description = "The Name tag for your EC2 instance"
   type        = string
-  default     = "cicd-jenkins-28-april"
+  default     = "cicd-jenkins-29-april"
 }
 
 variable "key_name" {
   description = "The name of the key pair to create"
   type        = string
-  default     = "cicd-jenkins-28-april"
+  default     = "cicd-jenkins-29-april"
 }
 
 variable "aws_region" {

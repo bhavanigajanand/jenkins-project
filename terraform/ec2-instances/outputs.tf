@@ -5,5 +5,5 @@ output "public_ip" {
 
 output "ssh_command" {
   description = "Command to SSH into the server"
-  value       = "ssh -i ${var.key_name}.pem ubuntu@${aws_instance.app_server.public_ip}"
+  value       = "ssh -i ${var.key_name}.pem ec2-user@${aws_instance.app_server.public_ip}"
 }
