@@ -1,13 +1,10 @@
 pipeline {
     agent any
-
     environment {
         IMAGE_NAME = "bhavanigajanand/jenkins-cicd-app"
         CONTAINER_NAME = "jenkins-cicd-app"
     }
-
     stages {
-
         stage('Clone Repository') {
             steps {
                 echo 'Cloning repository...'
@@ -15,14 +12,12 @@ pipeline {
                     url: 'https://github.com/bhavanigajanand/jenkins-project.git'
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'sudo docker build -t $IMAGE_NAME ./app'
+                sh 'docker build -t $IMAGE_NAME ./app'
             }
         }
-
         stage('Push to DockerHub') {
             steps {
                 echo 'Pushing image to DockerHub...'
@@ -33,44 +28,29 @@ pipeline {
                 )]) {
                     sh '''
                         echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        sudo docker push $IMAGE_NAME
+                        docker push $IMAGE_NAME
                     '''
                 }
             }
         }
-
-        stage('Deploy on EC2') {
+        stage('Deploy') {
             steps {
-                echo 'Deploying on EC2...'
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'ec2-ssh-key',
-                        keyFileVariable: 'SSH_KEY',
-                        usernameVariable: 'SSH_USER'
-                    ),
-                    string(credentialsId: 'ec2-public-ip', variable: 'EC2_IP')
-                ]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_USER@$EC2_IP "
-                            sudo docker pull $IMAGE_NAME &&
-                            sudo docker stop $CONTAINER_NAME || true &&
-                            sudo docker rm $CONTAINER_NAME || true &&
-                            sudo docker run -d --name $CONTAINER_NAME -p 80:80 $IMAGE_NAME
-                        "
-                    '''
-                }
+                echo 'Deploying container...'
+                sh '''
+                    docker pull $IMAGE_NAME
+                    docker stop $CONTAINER_NAME || true
+                    docker rm $CONTAINER_NAME || true
+                    docker run -d --name $CONTAINER_NAME -p 80:80 $IMAGE_NAME
+                '''
             }
         }
-
     }
-
     post {
         success {
-            echo '✅ Deployment successfully Finished! App is live.'
+            echo '✅ Deployment successful! App is live.'
         }
         failure {
             echo '❌ Build failed! Check the logs.'
         }
     }
 }
-
