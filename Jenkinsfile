@@ -66,7 +66,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Deployment successful! App is live.'
+            echo '✅ Deployment successfully Finished! App is live.'
         }
         failure {
             echo '❌ Build failed! Check the logs.'
