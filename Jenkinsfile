@@ -19,7 +19,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t $IMAGE_NAME ./app'
+                sh 'sudo docker build -t $IMAGE_NAME ./app'
             }
         }
 
@@ -33,7 +33,7 @@ pipeline {
                 )]) {
                     sh '''
                         echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker push $IMAGE_NAME
+                        sudo docker push $IMAGE_NAME
                     '''
                 }
             }
@@ -52,10 +52,10 @@ pipeline {
                 ]) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_USER@$EC2_IP "
-                            docker pull $IMAGE_NAME &&
-                            docker stop $CONTAINER_NAME || true &&
-                            docker rm $CONTAINER_NAME || true &&
-                            docker run -d --name $CONTAINER_NAME -p 80:80 $IMAGE_NAME
+                            sudo docker pull $IMAGE_NAME &&
+                            sudo docker stop $CONTAINER_NAME || true &&
+                            sudo docker rm $CONTAINER_NAME || true &&
+                            sudo docker run -d --name $CONTAINER_NAME -p 80:80 $IMAGE_NAME
                         "
                     '''
                 }
