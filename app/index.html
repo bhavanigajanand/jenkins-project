@@ -6,62 +6,90 @@
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: white;
+            background: #0f172a;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            font-family: 'Courier New', monospace;
         }
 
-        .box {
-            text-align: center;
-            padding: 40px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 25px rgba(0,0,0,0.5);
-        }
-
-        h1 {
-            color: #38bdf8;
-            margin-bottom: 10px;
-        }
-
-        p {
+        .terminal {
+            color: #00ff00;
             font-size: 18px;
-            margin: 8px 0;
+            line-height: 2;
+            white-space: pre;
         }
 
-        .badge {
-            margin-top: 20px;
+        .cursor {
             display: inline-block;
-            padding: 10px 15px;
-            background: #22c55e;
-            border-radius: 8px;
-            font-weight: bold;
+            width: 10px;
+            height: 18px;
+            background: #00ff00;
+            animation: blink 0.8s step-end infinite;
+            vertical-align: middle;
         }
 
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #94a3b8;
+        @keyframes blink {
+            50% { opacity: 0; }
         }
     </style>
 </head>
-
 <body>
-    <div class="box">
-        <h1>🚀 Jenkins CI/CD Pipeline</h1>
-        <p>This project is built and deployed by <strong>Bhavani Gajanand</strong>.</p>
-        <p>Every commit triggers an automated build & deployment.</p>
-        <p>Deployed using Docker + Jenkins on AWS EC2.</p>
+    <div class="terminal" id="terminal"></div>
 
-        <div class="badge">Deployment Successful ✔</div>
+    <script>
+        const lines = [
+            "$ whoami",
+            "  Bhavani Gajanand",
+            "",
+            "$ cat project.txt",
+            "  Project  : Jenkins CI/CD Pipeline",
+            "  Status   : Deployment Successful ✔",
+            "",
+            "$ cat tools.txt",
+            "  - Terraform   (Infrastructure)",
+            "  - Jenkins     (CI/CD Pipeline)",
+            "  - Docker      (Containerization)",
+            "  - DockerHub   (Image Registry)",
+            "  - AWS EC2     (Cloud Server)",
+            "  - GitHub      (Source Control)",
+            "",
+            "$ echo 'Every git push auto deploys the app!'",
+            "  Every git push auto deploys the app!",
+            "",
+            "$ status",
+            "  App is LIVE at http://3.90.25.106 ✔",
+        ];
 
-        <div class="footer">
-            Bhavani Gajanand • DevOps Project • Terraform + Docker + Jenkins
-        </div>
-    </div>
+        const terminal = document.getElementById('terminal');
+        let lineIndex = 0;
+        let charIndex = 0;
+        let output = '';
+
+        function type() {
+            if (lineIndex >= lines.length) {
+                terminal.innerHTML = output + '<span class="cursor"></span>';
+                return;
+            }
+
+            const currentLine = lines[lineIndex];
+
+            if (charIndex < currentLine.length) {
+                output += currentLine[charIndex];
+                charIndex++;
+                terminal.innerHTML = output + '<span class="cursor"></span>';
+                setTimeout(type, 40);
+            } else {
+                output += '\n';
+                lineIndex++;
+                charIndex = 0;
+                terminal.innerHTML = output + '<span class="cursor"></span>';
+                setTimeout(type, 200);
+            }
+        }
+
+        type();
+    </script>
 </body>
 </html>
